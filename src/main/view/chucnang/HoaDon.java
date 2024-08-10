@@ -34,6 +34,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class HoaDon extends javax.swing.JInternalFrame {
+
     private DefaultTableModel model = new DefaultTableModel();
     private DefaultTableModel model1 = new DefaultTableModel();
     private DefaultTableModel model2 = new DefaultTableModel();
@@ -41,6 +42,7 @@ public class HoaDon extends javax.swing.JInternalFrame {
     private int index;
     private int index2;
     int originalIdHoaDonChiTiet = ToanCuc.getIdHoaDonChiTiet();
+
     public HoaDon() {
         initComponents();
         this.cauhinhForm();
@@ -53,14 +55,15 @@ public class HoaDon extends javax.swing.JInternalFrame {
         txtNgayBatDau.setDateFormatString("dd-MM-yyyy");
         txtNgayKetThuc.setDateFormatString("dd-MM-yyyy");
     }
-    
+
     public void cauhinhForm() {
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
         BasicInternalFrameUI ui = (BasicInternalFrameUI) this.getUI();
         ui.setNorthPane(null);
 
     }
-    private void setForm0(){
+
+    private void setForm0() {
         if (tblHoaDon.getRowCount() > 0) {
             index = 0;
             setForm();
@@ -70,41 +73,60 @@ public class HoaDon extends javax.swing.JInternalFrame {
             loadSet();
         }
     }
-    private void loadSet(){
-        index2 =0;
+
+    private void loadSet() {
+        index2 = 0;
         setForm2();
     }
-    private void setForm2(){
+
+    private void setForm2() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator(',');
+        symbols.setDecimalSeparator('.');
+        DecimalFormat decimalFormat = new DecimalFormat("#,###.##", symbols);
+
+        // Assuming the values in columns 0, 1, and 2 are strings
         txtMaHoaDon2.setText(model1.getValueAt(index2, 0).toString());
         txtTenSanPham.setText(model1.getValueAt(index2, 1).toString());
         txtSoLuong.setText(model1.getValueAt(index2, 2).toString());
-        txtDonGia.setText(model1.getValueAt(index2, 3).toString());
+
+        // Assuming the value in column 3 is numeric but stored as a string
+        double price = Double.parseDouble(model1.getValueAt(index2, 3).toString());
+        txtDonGia.setText(decimalFormat.format(price));
     }
+
     private void setSum() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator(',');
+        symbols.setDecimalSeparator('.');
+        DecimalFormat decimalFormat = new DecimalFormat("#,###.##", symbols);
+
         double sumCount = 0;
         double sumPrice = 0;
         int max = model.getRowCount();
+
         for (int i = 0; i < max; i++) {
-            sumCount++;
-            sumPrice += Double.parseDouble(model.getValueAt(i, 7).toString()); // Fixed toString()
+            sumCount++; // Count the number of rows
+            sumPrice += Double.parseDouble(model.getValueAt(i, 7).toString()); // Summing up prices
         }
-        txtCount.setText(sumCount+"");
-        txtPrice.setText(sumPrice+"");
+
+        txtCount.setText(String.valueOf(sumCount)); // Display total count
+        txtPrice.setText(decimalFormat.format(sumPrice)); // Display formatted sum price
     }
+
     private void fillTable1() {
         ArrayList<HoaDonEntity> list = new ArrayList<>();
         model.setRowCount(0);
         list = hdre.getAll();
         for (HoaDonEntity hd : list) {
-            Object[] rowData =  hd.toTable();
+            Object[] rowData = hd.toTable();
             rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
             model.addRow(rowData);
         }
     }
-    
 
     private void fillTable2() {
-       String ma = txtMaHoaDon.getText();
+        String ma = txtMaHoaDon.getText();
         ArrayList<HoaDonChiTiet> list = new ArrayList<>();
         model1.setRowCount(0);
         list = hdre.getHdct(ma);
@@ -112,18 +134,18 @@ public class HoaDon extends javax.swing.JInternalFrame {
             model1.addRow(hdct.toTable2());
         }
     }
+
     private void fillTable3() {
         ArrayList<HoaDonEntity> list = new ArrayList<>();
         model2.setRowCount(0);
         list = hdre.getRemove();
         for (HoaDonEntity hd : list) {
-            Object[] rowData =  hd.toTable();
+            Object[] rowData = hd.toTable();
             rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
             model2.addRow(rowData);
         }
     }
 
-    
     private void setForm() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setGroupingSeparator(',');
@@ -139,12 +161,13 @@ public class HoaDon extends javax.swing.JInternalFrame {
             txtNgayThanhToan.setDate(date);
         } catch (Exception e) {
             e.printStackTrace();
-        }       
+        }
         Float tongtien = Float.parseFloat(model.getValueAt(index, 5).toString());
         txtTongTien.setText(decimalFormat.format(tongtien));
         Float ThanhTien = Float.parseFloat(model.getValueAt(index, 7).toString());
         txtThanhTien.setText(decimalFormat.format(ThanhTien));
     }
+
     private void setForm1() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setGroupingSeparator(',');
@@ -166,6 +189,7 @@ public class HoaDon extends javax.swing.JInternalFrame {
         Float ThanhTien = Float.parseFloat(model2.getValueAt(index, 7).toString());
         txtThanhTien.setText(decimalFormat.format(ThanhTien));
     }
+
     private void clearForm() {
         txtMaHoaDon.setText("");
         txtTenKh.setText("");
@@ -178,8 +202,8 @@ public class HoaDon extends javax.swing.JInternalFrame {
         txtSoLuong.setText("");
         txtDonGia.setText("");
         model1.setRowCount(0);
-   }
-    
+    }
+
     private boolean checkSearchText(String text) {
         if (text.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Bạn chưa tìm văn bản cần tìm");
@@ -207,9 +231,10 @@ public class HoaDon extends javax.swing.JInternalFrame {
                 }
                 return true;
             }
-            return true; 
+            return true;
         }
     }
+
     private boolean isNumber(String text) {
         try {
             Long.parseLong(text);
@@ -218,6 +243,7 @@ public class HoaDon extends javax.swing.JInternalFrame {
             return false;
         }
     }
+
     private void searchText(String text) {
         if (checkSearchText(text)) {
             ArrayList<HoaDonEntity> list = new ArrayList<>();
@@ -226,21 +252,20 @@ public class HoaDon extends javax.swing.JInternalFrame {
             if (list.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu!");
                 return;
-            } 
-            else {
+            } else {
                 for (HoaDonEntity hd : list) {
-                    Object[] rowData =  hd.toTable();
+                    Object[] rowData = hd.toTable();
                     rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
                     model.addRow(rowData);
                 }
             }
-        }
-        else{
+        } else {
             return;
         }
         setForm0();
         setSum();
     }
+
     private boolean checkDay(Date startDate, Date endDate) {
         if (startDate == null && endDate != null) {
             JOptionPane.showMessageDialog(this, "Bạn Chưa Nhập Ngày Bắt Đầu");
@@ -261,6 +286,7 @@ public class HoaDon extends javax.swing.JInternalFrame {
 
         return true;
     }
+
     private void searchDays(Date d1, Date d2) {
         if (checkDay(d1, d2)) {
             ArrayList<HoaDonEntity> list = new ArrayList<>();
@@ -271,9 +297,9 @@ public class HoaDon extends javax.swing.JInternalFrame {
                 return;
             } else {
                 for (HoaDonEntity hd : list) {
-                   Object[] rowData =  hd.toTable();
-                   rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
-                   model.addRow(rowData);
+                    Object[] rowData = hd.toTable();
+                    rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
+                    model.addRow(rowData);
                 }
             }
         } else {
@@ -287,15 +313,14 @@ public class HoaDon extends javax.swing.JInternalFrame {
         ArrayList<HoaDonEntity> list = new ArrayList<>();
         model.setRowCount(0);
         list = hdre.TimKiemTheoPhuongThuc(cbo);
-        if(list.isEmpty()){
+        if (list.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu!");
             return;
-        }
-        else{
+        } else {
             for (HoaDonEntity hd : list) {
-               Object[] rowData =  hd.toTable();
-               rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
-               model.addRow(rowData);
+                Object[] rowData = hd.toTable();
+                rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
+                model.addRow(rowData);
             }
         }
         setForm0();
@@ -303,98 +328,94 @@ public class HoaDon extends javax.swing.JInternalFrame {
     }
 
     private void searchCboDay(Date d1, Date d2, String cbo) {
-        if(checkDay(d1, d2)){
+        if (checkDay(d1, d2)) {
             ArrayList<HoaDonEntity> list = new ArrayList<>();
             model.setRowCount(0);
             list = hdre.TimKiemTheoPhuongThucVaNgay(cbo, d1, d2);
-            if(list.isEmpty()){
+            if (list.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu!");
                 return;
-            }
-            else{
+            } else {
                 for (HoaDonEntity hd : list) {
-                    Object[] rowData =  hd.toTable();
+                    Object[] rowData = hd.toTable();
                     rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
                     model.addRow(rowData);
                 }
             }
-        }
-        else{
+        } else {
             return;
         }
         setForm0();
         setSum();
     }
+
     private void searchTextDay(Date d1, Date d2, String text) {
-        if(checkDay(d1, d2) && checkSearchText(text)){
+        if (checkDay(d1, d2) && checkSearchText(text)) {
             ArrayList<HoaDonEntity> list = new ArrayList<>();
             model.setRowCount(0);
             list = hdre.timKiemTheoVanBanNgay(text, d1, d2);
-            if(list.isEmpty()){
+            if (list.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu");
                 return;
-            }
-            else{
+            } else {
                 for (HoaDonEntity hd : list) {
-                    Object[] rowData =  hd.toTable();
+                    Object[] rowData = hd.toTable();
                     rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
                     model.addRow(rowData);
                 }
             }
-           
-        }
-        else{
+
+        } else {
             return;
         }
         setForm0();
         setSum();
     }
-    private void searchTextCbo(String text, String cbo){
-        if(checkSearchText(text)){
+
+    private void searchTextCbo(String text, String cbo) {
+        if (checkSearchText(text)) {
             ArrayList<HoaDonEntity> list = new ArrayList<>();
             model.setRowCount(0);
             list = hdre.timKiemVanBanVaPhuongThuc(text, cbo);
-            if(list.isEmpty()){
+            if (list.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu");
                 return;
-            }
-            else{
-                 for (HoaDonEntity hd : list) {
-                    Object[] rowData =  hd.toTable();
+            } else {
+                for (HoaDonEntity hd : list) {
+                    Object[] rowData = hd.toTable();
                     rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
                     model.addRow(rowData);
                 }
             }
-        }
-        else{
+        } else {
             return;
         }
         setForm0();
         setSum();
     }
-    private void searchAll(String text, String cbo, Date d1, Date d2){
-        if(checkDay(d1, d2)&&checkSearchText(text)){
+
+    private void searchAll(String text, String cbo, Date d1, Date d2) {
+        if (checkDay(d1, d2) && checkSearchText(text)) {
             ArrayList<HoaDonEntity> list = new ArrayList<>();
             model.setRowCount(0);
             list = hdre.timKiemAll(text, cbo, d1, d2);
-            if(list.isEmpty()){
+            if (list.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy dữ liệu!");
                 return;
-            }
-            else{
-                 for (HoaDonEntity hd : list) {
-                    Object[] rowData =  hd.toTable();
+            } else {
+                for (HoaDonEntity hd : list) {
+                    Object[] rowData = hd.toTable();
                     rowData[10] = (Integer) rowData[10] == 1 ? "Đã Thanh Toán" : "Chưa Thanh Toán";
                     model.addRow(rowData);
                 }
             }
-        }
-        else{
+        } else {
             return;
         }
         setForm0();
         setSum();
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -978,23 +999,18 @@ public class HoaDon extends javax.swing.JInternalFrame {
         Date d2 = txtNgayKetThuc.getDate();
         if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() == null && txtNgayKetThuc.getDate() == null && cboPt.getSelectedIndex() == 0) {
             searchText(text);
-        } 
-        else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() == 0) {
+        } else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() == 0) {
             searchTextDay(d1, d2, text);
-        } 
-        else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() == null && txtNgayKetThuc.getDate()==null&& cboPt.getSelectedIndex() != 0) {
-             searchTextCbo(text,pt);
-        } 
-        else if(!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate()!=null&& cboPt.getSelectedIndex() != 0){
+        } else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() == null && txtNgayKetThuc.getDate() == null && cboPt.getSelectedIndex() != 0) {
+            searchTextCbo(text, pt);
+        } else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() != 0) {
             searchAll(text, pt, d1, d2);
-        }
-        else if (txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() == 0) {
+        } else if (txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() == 0) {
             searchDays(d1, d2);
-        }
-        else if (txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() != 0) {
+        } else if (txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() != 0) {
             searchCboDay(d1, d2, pt);
         }
-        
+
     }//GEN-LAST:event_btnTimKiemTheoVanBanActionPerformed
 
     private void cboPtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboPtActionPerformed
@@ -1008,20 +1024,17 @@ public class HoaDon extends javax.swing.JInternalFrame {
         } else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() == null && txtNgayKetThuc.getDate() == null && cboPt.getSelectedIndex() != 0) {
             searchTextCbo(text, pt);
         } else if (txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() != 0) {
-             searchCboDay(d1, d2, pt);
+            searchCboDay(d1, d2, pt);
         } else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() != 0) {
             searchAll(text, pt, d1, d2);
-        }
-        else if (txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() == null && txtNgayKetThuc.getDate() == null && cboPt.getSelectedIndex() == 0){
+        } else if (txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() == null && txtNgayKetThuc.getDate() == null && cboPt.getSelectedIndex() == 0) {
             fillTable1();
-            
-        }
-        else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() == null && txtNgayKetThuc.getDate() == null && cboPt.getSelectedIndex() == 0){
+
+        } else if (!txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() == null && txtNgayKetThuc.getDate() == null && cboPt.getSelectedIndex() == 0) {
             searchText(text);
-        }
-        else if(txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() == 0){
+        } else if (txtVanBan.getText().isEmpty() && txtNgayBatDau.getDate() != null && txtNgayKetThuc.getDate() != null && cboPt.getSelectedIndex() == 0) {
             searchDays(d1, d2);
-            
+
         }
     }//GEN-LAST:event_cboPtActionPerformed
 
@@ -1029,13 +1042,12 @@ public class HoaDon extends javax.swing.JInternalFrame {
         index2 = tblHdct.getSelectedRow();
         if (evt.getClickCount() == 1) {
             setForm2();
-        } 
-        else if (evt.getClickCount() == 2) {
-            String MaHoaDon=tblHdct.getValueAt(index2, 0).toString();
-            int underscoreIndex = MaHoaDon.indexOf('_'); 
+        } else if (evt.getClickCount() == 2) {
+            String MaHoaDon = tblHdct.getValueAt(index2, 0).toString();
+            int underscoreIndex = MaHoaDon.indexOf('_');
             String HoaDonChiTiet = MaHoaDon.substring(underscoreIndex + 1);
             int idHDCT = Integer.parseInt(HoaDonChiTiet);
-            main.view.chucnang.HoaDonChiTiet dialog = new main.view.chucnang.HoaDonChiTiet((JFrame) SwingUtilities.getWindowAncestor(this), true,idHDCT);
+            main.view.chucnang.HoaDonChiTiet dialog = new main.view.chucnang.HoaDonChiTiet((JFrame) SwingUtilities.getWindowAncestor(this), true, idHDCT);
             dialog.setIdHDCT(idHDCT);
             dialog.setVisible(true);
         }
@@ -1057,7 +1069,7 @@ public class HoaDon extends javax.swing.JInternalFrame {
 
     private void tblHoaDonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHoaDonMouseClicked
         // TODO add your handling code here:
-        index=tblHoaDon.getSelectedRow();
+        index = tblHoaDon.getSelectedRow();
         setForm();
         fillTable2();
         loadSet();
@@ -1065,10 +1077,10 @@ public class HoaDon extends javax.swing.JInternalFrame {
 
     private void tblHoaDon1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHoaDon1MouseClicked
         // TODO add your handling code here:
-         index=tblHoaDon1.getSelectedRow();
-         setForm1();
-         fillTable3();
-         loadSet();
+        index = tblHoaDon1.getSelectedRow();
+        setForm1();
+        fillTable3();
+        loadSet();
     }//GEN-LAST:event_tblHoaDon1MouseClicked
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -1080,10 +1092,10 @@ public class HoaDon extends javax.swing.JInternalFrame {
 
         // Tạo tiêu đề cột
         Row headerRow = sheet.createRow(0);
-        String[] headers = {"STT", "Mã Hoá Đơn", "Tên Khách Hàng", "Mã Voucher", "Tên Nhân Viên", 
-                            "Ngày Thanh Toán", "Tổng Tiền", "Tiền Voucher", "Thành Tiền", 
-                            "Phương Thức", "Ghi Chú", "Trạng Thái"};
-        
+        String[] headers = {"STT", "Mã Hoá Đơn", "Tên Khách Hàng", "Mã Voucher", "Tên Nhân Viên",
+            "Ngày Thanh Toán", "Tổng Tiền", "Tiền Voucher", "Thành Tiền",
+            "Phương Thức", "Ghi Chú", "Trạng Thái"};
+
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i, CellType.STRING);
             cell.setCellValue(headers[i]);
@@ -1203,7 +1215,5 @@ public class HoaDon extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtTongTien;
     private javax.swing.JTextField txtVanBan;
     // End of variables declaration//GEN-END:variables
-   
-    
- 
+
 }

@@ -196,7 +196,7 @@ public class KhachHangView extends javax.swing.JInternalFrame {
                 .addComponent(btTimKH)
                 .addGap(47, 47, 47))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1109, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1070, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(167, 167, 167)
@@ -256,14 +256,14 @@ public class KhachHangView extends javax.swing.JInternalFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 688, Short.MAX_VALUE)
+                .addGap(0, 650, Short.MAX_VALUE)
                 .addComponent(txtTimLichSu, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(33, 33, 33)
                 .addComponent(btTimLichSu)
                 .addGap(58, 58, 58))
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1103, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1064, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -395,9 +395,9 @@ public class KhachHangView extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
+                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1076, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGap(45, 45, 45))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -476,7 +476,7 @@ public class KhachHangView extends javax.swing.JInternalFrame {
         
         if (this.isVisible()) {
             String sdt = txtSdt.getText();
-            String regex = "^(0|\\+84)(3[2-9]|5[689]|7[06-9]|8[1-5]|9[0-9])[0-9]{7}$";//chứa số điện thoại 10 số hay 11 số, đầu 09 or +84
+            String regex = "^(0|\\+84)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$";//chứa số điện thoại 10 số hay 11 số, đầu 09 or +84
             if (sdt.length() > 0) {
                 if (!sdt.matches(regex)) {// địa chỉ sai định dạng
                     JOptionPane.showMessageDialog(this, "Sai định dạng, Nhập lại số điện thoại,VD: 0976766682 hoặc +84961659480");
@@ -509,7 +509,7 @@ public class KhachHangView extends javax.swing.JInternalFrame {
         
         if (this.isVisible()) {
             String diaChi = txtDiaChi.getText();
-            String regex = "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơĂÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂÂÊÔƠƯăâêôơưĂÊÔƯăêôơư0-9\\s,.\\s]+$";//chứa chữ cái, số, khoảng trắng, dấu phẩy, dấu chấm, dấu gạch ngang và dấu gạch chéo.
+            String regex = "^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẨẩẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹ\\s\\d]+$";//chứa chữ cái, số, khoảng trắng, dấu phẩy, dấu chấm, dấu gạch ngang và dấu gạch chéo.
             if (diaChi.length() > 0) {
                 if (!diaChi.matches(regex)) {// địa chỉ sai định dạng
                     JOptionPane.showMessageDialog(this, "Sai định dạng, Nhập lại địa chỉ,vd: 123 Ha Noi");
