@@ -264,8 +264,14 @@ public class BanHang extends javax.swing.JInternalFrame {
             double tienGG = tienSP * (discount / 100.0);
 
             // Định dạng số tiền giảm giá với phân cách hàng nghìn
-            DecimalFormat decimalFormat = new DecimalFormat("#,###");
-            txtGG.setText(decimalFormat.format(tienGG));
+            if (tienGG > 900000) {
+                tienGG = 900000;
+                DecimalFormat decimalFormat = new DecimalFormat("#,###");
+                txtGG.setText(decimalFormat.format(tienGG));
+            } else {
+                DecimalFormat decimalFormat = new DecimalFormat("#,###");
+                txtGG.setText(decimalFormat.format(tienGG));
+            }
         } else {
             DecimalFormat decimalFormat = new DecimalFormat("#,###");
             txtGG.setText(decimalFormat.format(discount));

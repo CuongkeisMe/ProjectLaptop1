@@ -5,6 +5,7 @@ import com.raven.chart.ModelChart;
 import java.awt.Color;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,10 +82,14 @@ public class ThongKe extends javax.swing.JInternalFrame {
             BigDecimal totalRevenueMonth = ThongKeSPRepositories.getTotalRevenueMonth();
             BigDecimal totalRevenueYear = ThongKeSPRepositories.getTotalRevenueYear();
 
-            // Cập nhật thông tin lên các label
-            totalRevenueLabel1.setText(totalRevenueMonth.toString());
-            totalRevenueLabel.setText(totalRevenueDate.toString());
-            totalRevenueLabel2.setText(totalRevenueYear.toString());
+            // Tạo DecimalFormat để định dạng số tiền
+            DecimalFormat formatter = new DecimalFormat("#,###");
+
+            // Định dạng số tiền và cập nhật thông tin lên các label
+            totalRevenueLabel1.setText(formatter.format(totalRevenueMonth));
+            totalRevenueLabel.setText(formatter.format(totalRevenueDate));
+            totalRevenueLabel2.setText(formatter.format(totalRevenueYear));
+
         } catch (SQLException e) {
             // Xử lý lỗi nếu có sự cố khi truy xuất dữ liệu
             JOptionPane.showMessageDialog(null,
@@ -1047,7 +1052,7 @@ public class ThongKe extends javax.swing.JInternalFrame {
 
     private void chartPanelKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_chartPanelKeyReleased
         // TODO add your handling code here:
-       
+
 
     }//GEN-LAST:event_chartPanelKeyReleased
 
