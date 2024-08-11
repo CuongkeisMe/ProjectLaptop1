@@ -61,10 +61,10 @@ public class BanHang extends javax.swing.JInternalFrame {
         this.showDatahoadon(hdsp.getAllHoaDon());
         txtNameKH.setEnabled(false);
         txtSDTKH.setEnabled(false);
-        txtTienTra.setEnabled(false);
-        txtTienSP.setEnabled(false);
-        txtTongTien.setEnabled(false);
-        txtGG.setEnabled(false);
+        txtTienTra.setEditable(false);
+        txtTienSP.setEditable(false);
+        txtTongTien.setEditable(false);
+        txtGG.setEditable(false);
         txtMaHD.setEnabled(false);
         txtTenNV.setEnabled(false);
         initialize();
@@ -674,12 +674,14 @@ public class BanHang extends javax.swing.JInternalFrame {
 
         jLabel14.setText("Giảm giá");
 
+        txtGG.setForeground(new java.awt.Color(0, 0, 0));
         txtGG.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtGGKeyReleased(evt);
             }
         });
 
+        jLabel15.setBackground(new java.awt.Color(0, 0, 0));
         jLabel15.setText("Thành tiền");
 
         jLabel16.setText("Hình thức TT");
@@ -693,6 +695,8 @@ public class BanHang extends javax.swing.JInternalFrame {
                 txtTienKHKeyReleased(evt);
             }
         });
+
+        txtTienTra.setForeground(new java.awt.Color(0, 0, 0));
 
         jButton6.setText("Thanh toán");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -708,6 +712,8 @@ public class BanHang extends javax.swing.JInternalFrame {
             }
         });
 
+        txtTongTien.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        txtTongTien.setForeground(new java.awt.Color(0, 0, 0));
         txtTongTien.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtTongTienActionPerformed(evt);
@@ -786,6 +792,7 @@ public class BanHang extends javax.swing.JInternalFrame {
 
         jLabel3.setText("Tổng tiền SP");
 
+        txtTienSP.setForeground(new java.awt.Color(0, 0, 0));
         txtTienSP.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 txtTienSPKeyReleased(evt);
