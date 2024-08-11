@@ -23,4 +23,7 @@ public class HoaDonChiTietResponse {
     private Integer soLuong;
     private float giaBan;
     private float tongTien;
+    private int idImeiDaBan; 
+    private String maImeiDaBan; 
+    private int soLuongImei;
 }

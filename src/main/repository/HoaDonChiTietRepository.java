@@ -6,11 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import main.config.DBConnect;
 import main.entity.HoaDonChiTiet;
+import main.entity.HoaDonTro;
 import main.response.HoaDonChiTietResponse;
+import main.response.SanPhamReponse_BH;
 
 public class HoaDonChiTietRepository {
 
-public ArrayList<HoaDonChiTietResponse> getAll(Integer idHoaDon) {
+    public ArrayList<HoaDonChiTietResponse> getAll(Integer idHoaDon) {
         ArrayList<HoaDonChiTietResponse> listHDCT = new ArrayList<>();
         String sql = """
                  SELECT dbo.HoaDonChiTiet.id_HDCT, dbo.HoaDon.id_HoaDon, dbo.SanPham.id_SanPham, dbo.SanPham.MaSanPham, dbo.SanPham.TenSanPham, dbo.HoaDonChiTiet.SoLuong, dbo.HoaDonChiTiet.DonGia, dbo.HoaDonChiTiet.SoLuong * dbo.HoaDonChiTiet.DonGia AS TongTien
@@ -128,17 +130,19 @@ public ArrayList<HoaDonChiTietResponse> getAll(Integer idHoaDon) {
         ArrayList<HoaDonChiTiet> list = new ArrayList<>();
         try {
             Connection con = DBConnect.getConnection();
-            String sql = "SELECT\n"
-                    + "    HoaDon.MaHoaDon AS 'MaHoaDon',\n"
-                    + "    SanPham.TenSanPham AS 'TenSanPham',\n"
-                    + "    ImeiDaBan.Ma_Imei AS 'MaImei',\n"
-                    + "    SanPham.GiaBan AS 'GiaBan'\n"
-                    + "FROM HoaDonChiTiet\n"
-                    + "INNER JOIN HoaDon ON HoaDon.id_HoaDon = HoaDonChiTiet.id_HoaDon\n"
-                    + "INNER JOIN ImeiDaBan ON ImeiDaBan.id_HDCT = HoaDonChiTiet.id_HDCT\n"
-                    + "INNER JOIN SanPham ON SanPham.id_SanPham = HoaDonChiTiet.id_SanPham\n"
-                    + "WHERE HoaDonChiTiet.id_HDCT = ? \n"
-                    + "  AND HoaDonChiTiet.TrangThai = 1;";
+            String sql = """
+                         SELECT
+                             HoaDon.MaHoaDon AS 'MaHoaDon',
+                             SanPham.TenSanPham AS 'TenSanPham',
+                             ImeiDaBan.Ma_Imei AS 'MaImei',
+                             SanPham.GiaBan AS 'GiaBan'
+                         FROM HoaDonChiTiet
+                         full JOIN HoaDon ON HoaDon.id_HoaDon = HoaDonChiTiet.id_HoaDon
+                         full JOIN ImeiDaBan ON ImeiDaBan.id_HDCT = HoaDonChiTiet.id_HDCT
+                         full JOIN SanPham ON SanPham.id_SanPham = HoaDonChiTiet.id_SanPham
+                         WHERE HoaDonChiTiet.id_HDCT = ?
+                           AND HoaDonChiTiet.TrangThai = 1;
+                         """;
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setInt(1, id_HoaDon);
             ResultSet rs = ps.executeQuery();
@@ -193,7 +197,7 @@ public ArrayList<HoaDonChiTietResponse> getAll(Integer idHoaDon) {
 
         return soLuong;
     }
-    
+
     public int getSoLuongSanPham(Integer idSP) {
         int soLuong = 0;
         String sql = """
@@ -232,5 +236,207 @@ public ArrayList<HoaDonChiTietResponse> getAll(Integer idHoaDon) {
         return listHDCT;
     }
 
-    
+    public ArrayList<SanPhamReponse_BH> LayImeiDaBanHuy(String maSP_HDCT, String maHD_HD) {
+        String sql = """
+                       SELECT dbo.ImeiDaBan.Ma_Imei, dbo.HoaDonChiTiet.id_HDCT, dbo.ImeiDaBan.id_ImeiDaBan
+                                                                  FROM   dbo.HoaDon INNER JOIN
+                                                                               dbo.HoaDonChiTiet ON dbo.HoaDon.id_HoaDon = dbo.HoaDonChiTiet.id_HoaDon INNER JOIN
+                                                                               dbo.ImeiDaBan ON dbo.HoaDonChiTiet.id_HDCT = dbo.ImeiDaBan.id_HDCT INNER JOIN
+                                                                               dbo.SanPham ON dbo.HoaDonChiTiet.id_SanPham = dbo.SanPham.id_SanPham
+                                                                  WHERE SanPham.MaSanPham = ?
+                                                                  AND HoaDon.MaHoaDon = ?
+                     """;
+
+        ArrayList<SanPhamReponse_BH> lists = new ArrayList<>();
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, maSP_HDCT);
+            ps.setString(2, maHD_HD);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                SanPhamReponse_BH sp = SanPhamReponse_BH.builder()
+                        .maImeiDaBan(rs.getString(1))
+                        .idHoaDonChiTiet(rs.getInt(2))
+                        .idImeiDaBan(rs.getInt(3))
+                        .build();
+                lists.add(sp);
+            }
+            return lists;
+        } catch (Exception e) {
+            e.printStackTrace(System.out); // nem loi khi xay ra 
+        }
+        return lists;
+    }
+
+    public boolean updateSoLuongSPXoa(int soLuong, String maSP) {
+        int check = 0;
+        String sql = """
+                    UPDATE [dbo].[SanPham]
+                       SET [SoLuong] = ?
+                     WHERE MaSanPham = ?
+                    """;
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setObject(1, soLuong);
+            ps.setObject(2, maSP);
+            check = ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+        return check > 0;
+    }
+
+    public ArrayList<HoaDonChiTietResponse> getTongImeiTheoMaSP(String maSP) {
+        String sql = """
+                 SELECT COUNT(SanPham.id_SanPham) as 'Tong Imei Theo Ma SP'
+                 FROM dbo.SanPham INNER JOIN
+                      dbo.Imei ON dbo.SanPham.id_SanPham = dbo.Imei.id_SanPham
+                 WHERE Imei.TrangThai = 1 and SanPham.MaSanPham = ?
+                     """;
+        ArrayList<HoaDonChiTietResponse> lists = new ArrayList<>();
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setObject(1, maSP);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                HoaDonChiTietResponse response = HoaDonChiTietResponse.builder()
+                        .soLuongImei(rs.getInt(1))
+                        .build();
+                lists.add(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.out); // nem loi khi xay ra 
+        }
+        return lists;
+    }
+
+    public boolean updateSoLuongHDCT_Huy(int idHD) {
+        int check = 0;
+        String sql = """
+                   UPDATE HoaDonChiTiet 
+                   SET SoLuong = 0
+                   WHERE id_HoaDon = ?
+                    """;
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            // Object la cha cua cac loai kieu du lieu 
+            ps.setObject(1, idHD);
+            check = ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+
+        return check > 0;
+    }
+
+    public ArrayList<HoaDonTro> getHD_ClickTheoMa(String maHD_Click) {
+        ArrayList<HoaDonTro> list = new ArrayList<>();
+        try {
+            Connection con = DBConnect.getConnection();
+            String sql = """
+                    SELECT 
+                                                  hd.id_HoaDon, 
+                                                  hd.MaHoaDon, 
+                                                  hd.NgayThanhToan, 
+                                                  nv.MaNhanVien,
+                         						 hd.TrangThaiThanhToan, 
+                                                  hd.TrangThai
+                                                  
+                                              FROM 
+                                                  HoaDon hd
+                                              LEFT JOIN 
+                                                  NhanVien nv ON hd.id_NhanVien = nv.id_NhanVien
+                                              WHERE                        
+                                                  hd.TrangThaiThanhToan= 0
+                                             AND
+                                                  hd.TrangThai=0
+                                             AND
+                                                  hd.MaHoaDon=?
+                                             
+                     """;
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setObject(1, maHD_Click);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                HoaDonTro hd = new HoaDonTro().builder()
+                        .idHoaDon(rs.getInt(1))
+                        .maHoaDon(rs.getString(2))
+                        .ngayTao(rs.getDate(3))
+                        .maNhanVien(rs.getString(4))
+                        .tinhTrangThanhToan(rs.getInt(5))
+                        .tinhTrang(rs.getInt(6))
+                        .build();
+
+                list.add(hd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        return list;
+    }
+
+    public boolean updateTongTien(float tongtien, String maHD) {
+        int check = 0;
+        String sql = """
+                    update HoaDon
+                    set TongTien = ?
+                    where MaHoaDon = ?
+                    """;
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            // Object la cha cua cac loai kieu du lieu 
+            ps.setObject(1, tongtien);
+            ps.setObject(2, maHD);
+
+            check = ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+
+        return check > 0;
+    }
+
+    public boolean XoaAllHDCTGioHang(int idHDCT) {
+        int check = 0;
+        String sql = """
+                 delete HoaDonChiTiet 
+                  where id_HDCT = ?
+                    """;
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            // Object la cha cua cac loai kieu du lieu 
+            ps.setObject(1, idHDCT);
+            check = ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+
+        return check > 0;
+    }
+
+    public ArrayList<HoaDonChiTietResponse> getHDCTClick_TheoMaHDMaSP(String maHD, String maSP) {
+        String sql = """
+                     SELECT  HoaDonChiTiet.id_HoaDon , HoaDonChiTiet.id_SanPham,SanPham.TenSanPham, HoaDonChiTiet.SoLuong
+                     , HoaDonChiTiet.id_HDCT
+                     FROM  dbo.HoaDon INNER JOIN
+                                           dbo.HoaDonChiTiet ON dbo.HoaDon.id_HoaDon = dbo.HoaDonChiTiet.id_HoaDon INNER JOIN
+                                           dbo.SanPham ON dbo.HoaDonChiTiet.id_SanPham = dbo.SanPham.id_SanPham
+                     where SanPham.MaSanPham = ? and HoaDon.MaHoaDon = ?
+                     """;
+        ArrayList<HoaDonChiTietResponse> lists = new ArrayList<>();
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setObject(1, maSP);
+            ps.setObject(2, maHD);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                HoaDonChiTietResponse response = HoaDonChiTietResponse.builder()
+                        .idHoaDon(rs.getInt(1))
+                        .idSanPham(rs.getInt(2))
+                        .tenSanPham(rs.getString(3))
+                        .soLuong(rs.getInt(4))
+                        .idHoaDonChiTiet(rs.getInt(5))
+                        .build();
+                lists.add(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.out); // nem loi khi xay ra 
+        }
+        return lists;
+    }
 }

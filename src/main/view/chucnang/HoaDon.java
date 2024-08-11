@@ -80,20 +80,41 @@ public class HoaDon extends javax.swing.JInternalFrame {
     }
 
     private void setForm2() {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setGroupingSeparator(',');
-        symbols.setDecimalSeparator('.');
-        DecimalFormat decimalFormat = new DecimalFormat("#,###.##", symbols);
-
-        // Assuming the values in columns 0, 1, and 2 are strings
-        txtMaHoaDon2.setText(model1.getValueAt(index2, 0).toString());
-        txtTenSanPham.setText(model1.getValueAt(index2, 1).toString());
-        txtSoLuong.setText(model1.getValueAt(index2, 2).toString());
-
-        // Assuming the value in column 3 is numeric but stored as a string
-        double price = Double.parseDouble(model1.getValueAt(index2, 3).toString());
-        txtDonGia.setText(decimalFormat.format(price));
+       if (model1 == null) {
+           System.out.println("model1 is null");
+           return;
+       }
+       if (index2 < 0 || index2 >= model1.getRowCount()) {
+           return;
+       }
+       int columnCount = model1.getColumnCount();
+       if (columnCount <= 0) {
+           return;
+       }
+       DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+       symbols.setGroupingSeparator(',');
+       symbols.setDecimalSeparator('.');
+       DecimalFormat decimalFormat = new DecimalFormat("#,###.##", symbols);
+       Object maHoaDon2 = model1.getValueAt(index2, 0);
+       txtMaHoaDon2.setText(maHoaDon2 != null ? maHoaDon2.toString() : "");
+       Object tenSanPham = model1.getValueAt(index2, 1);
+       txtTenSanPham.setText(tenSanPham != null ? tenSanPham.toString() : "");
+       Object soLuong = model1.getValueAt(index2, 2);
+       txtSoLuong.setText(soLuong != null ? soLuong.toString() : "");
+       Object donGiaObj = model1.getValueAt(index2, 3);
+       if (donGiaObj != null) {
+           try {
+               double price = Double.parseDouble(donGiaObj.toString());
+               txtDonGia.setText(decimalFormat.format(price));
+           } catch (NumberFormatException e) {
+               txtDonGia.setText(""); 
+               e.printStackTrace(); 
+           }
+       } else {
+           txtDonGia.setText(""); 
+       }
     }
+
 
     private void setSum() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
@@ -106,12 +127,11 @@ public class HoaDon extends javax.swing.JInternalFrame {
         int max = model.getRowCount();
 
         for (int i = 0; i < max; i++) {
-            sumCount++; // Count the number of rows
-            sumPrice += Double.parseDouble(model.getValueAt(i, 7).toString()); // Summing up prices
+            sumCount++; 
+            sumPrice += Double.parseDouble(model.getValueAt(i, 7).toString());
         }
-
-        txtCount.setText(String.valueOf(sumCount)); // Display total count
-        txtPrice.setText(decimalFormat.format(sumPrice)); // Display formatted sum price
+        txtCount.setText(String.valueOf(sumCount)); 
+        txtPrice.setText(decimalFormat.format(sumPrice)); 
     }
 
     private void fillTable1() {
@@ -145,7 +165,6 @@ public class HoaDon extends javax.swing.JInternalFrame {
             model2.addRow(rowData);
         }
     }
-
     private void setForm() {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
         symbols.setGroupingSeparator(',');
@@ -173,21 +192,46 @@ public class HoaDon extends javax.swing.JInternalFrame {
         symbols.setGroupingSeparator(',');
         symbols.setDecimalSeparator('.');
         DecimalFormat decimalFormat = new DecimalFormat("#,###.##", symbols);
-        txtMaHoaDon.setText(model2.getValueAt(index, 0).toString());
-        txtTenKh.setText(model2.getValueAt(index, 1).toString());
-        txtTenNv.setText(model2.getValueAt(index, 3).toString());
+        Object maHoaDon = model2.getValueAt(index, 0);
+        txtMaHoaDon.setText(maHoaDon != null ? maHoaDon.toString() : "");
+        Object tenKh = model2.getValueAt(index, 1);
+        txtTenKh.setText(tenKh != null ? tenKh.toString() : "");
+        Object tenNv = model2.getValueAt(index, 3);
+        txtTenNv.setText(tenNv != null ? tenNv.toString() : "");
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         try {
             String dateString = model2.getValueAt(index, 4).toString();
-            Date date = dateFormat.parse(dateString);
-            txtNgayThanhToan.setDate(date);
+            if (dateString != null && !dateString.isEmpty()) {
+                Date date = dateFormat.parse(dateString);
+                txtNgayThanhToan.setDate(date);
+            } else {
+                txtNgayThanhToan.setDate(null);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Float tongtien = Float.parseFloat(model2.getValueAt(index, 5).toString());
-        txtTongTien.setText(decimalFormat.format(tongtien));
-        Float ThanhTien = Float.parseFloat(model2.getValueAt(index, 7).toString());
-        txtThanhTien.setText(decimalFormat.format(ThanhTien));
+        Object tongTienObj = model2.getValueAt(index, 5);
+        if (tongTienObj != null) {
+            try {
+                Float tongtien = Float.parseFloat(tongTienObj.toString());
+                txtTongTien.setText(decimalFormat.format(tongtien));
+            } catch (NumberFormatException e) {
+                txtTongTien.setText("");
+            }
+        } else {
+            txtTongTien.setText("");
+        }
+        Object thanhTienObj = model2.getValueAt(index, 7);
+        if (thanhTienObj != null) {
+            try {
+                Float thanhTien = Float.parseFloat(thanhTienObj.toString());
+                txtThanhTien.setText(decimalFormat.format(thanhTien));
+            } catch (NumberFormatException e) {
+                txtThanhTien.setText("");
+            }
+        } else {
+            txtThanhTien.setText("");
+        }
     }
 
     private void clearForm() {
@@ -203,7 +247,6 @@ public class HoaDon extends javax.swing.JInternalFrame {
         txtDonGia.setText("");
         model1.setRowCount(0);
     }
-
     private boolean checkSearchText(String text) {
         if (text.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Bạn chưa tìm văn bản cần tìm");
@@ -782,35 +825,30 @@ public class HoaDon extends javax.swing.JInternalFrame {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel27)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtCount, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel28)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(581, Short.MAX_VALUE))
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel6Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1021, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(15, Short.MAX_VALUE)))
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addComponent(jLabel27)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtCount, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel28)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1021, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(196, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel27)
                     .addComponent(txtCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel28)
                     .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
-            .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(30, Short.MAX_VALUE)))
         );
 
         jTabbedPane1.addTab("Lịch Sử Hoá Đơn", jPanel6);
@@ -1080,6 +1118,9 @@ public class HoaDon extends javax.swing.JInternalFrame {
         index = tblHoaDon1.getSelectedRow();
         setForm1();
         fillTable3();
+        setForm1();
+        fillTable2();
+        
         loadSet();
     }//GEN-LAST:event_tblHoaDon1MouseClicked
 

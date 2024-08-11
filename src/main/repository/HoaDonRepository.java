@@ -14,6 +14,7 @@ import main.config.DBConnect;
 import main.entity.HoaDonChiTiet;
 import main.entity.HoaDonTro;
 import main.entity.ToanCuc;
+import main.response.HoaDonChiTietResponse;
 
 /**
  *
@@ -385,28 +386,32 @@ public class HoaDonRepository {
         ArrayList<HoaDonEntity> list = new ArrayList<>();
         try {
             Connection con = DBConnect.getConnection();
-            String sql = "SELECT " +
-                         "    HoaDon.MaHoaDon as 'MaHoaDon', " +
-                         "    KhachHang.HoTen as 'kh', " +
-                         "    Voucher.MaVoucher as 'MaVoucher', " +
-                         "    NhanVien.HoTen as 'nv', " +
-                         "    FORMAT(HoaDon.NgayThanhToan, 'dd-MM-yyyy') as 'NgayThanhToan', " +
-                         "    HoaDon.TongTien as 'TongTien', " +
-                         "    HoaDon.TienVoucher as 'TienVoucher', " +
-                         "    HoaDon.ThanhTien as 'ThanhTien', " +
-                         "    HoaDon.PhuongThucThanhToan as 'PhuongThuc', " +
-                         "    HoaDon.GhiChu as 'GhiChu', " +
-                         "    HoaDon.TrangThaiThanhToan as 'TrangThaiThanhToan' " +
-                         "FROM " +
-                         "    HoaDon " +
-                         "JOIN " +
-                         "    KhachHang ON KhachHang.id_KhachHang = HoaDon.id_KhachHang " +
-                         "JOIN " +
-                         "    Voucher ON Voucher.id_Voucher = HoaDon.id_Voucher " +
-                         "JOIN " +
-                         "    NhanVien ON NhanVien.id_NhanVien = HoaDon.id_NhanVien " +
-                         "WHERE " +
-                         "    HoaDon.TrangThai = 0;";
+            String sql = """
+                         SELECT 
+                             HoaDon.MaHoaDon AS 'MaHoaDon',
+                             KhachHang.HoTen AS 'kh',
+                             Voucher.MaVoucher AS 'MaVoucher',
+                             NhanVien.HoTen AS 'nv',
+                             FORMAT(HoaDon.NgayThanhToan, 'dd-MM-yyyy') AS 'NgayThanhToan',
+                             HoaDon.TongTien AS 'TongTien',
+                             HoaDon.TienVoucher AS 'TienVoucher',
+                             HoaDon.ThanhTien AS 'ThanhTien',
+                             HoaDon.PhuongThucThanhToan AS 'PhuongThuc',
+                             HoaDon.GhiChu AS 'GhiChu',
+                             HoaDon.TrangThaiThanhToan AS 'TrangThaiThanhToan'
+                         FROM 
+                             HoaDon
+                          left JOIN 
+                             KhachHang ON KhachHang.id_KhachHang = HoaDon.id_KhachHang
+                         left JOIN 
+                         
+                             Voucher ON Voucher.id_Voucher = HoaDon.id_Voucher
+                         left JOIN 
+                         
+                             NhanVien ON NhanVien.id_NhanVien = HoaDon.id_NhanVien
+                         WHERE 
+                             HoaDon.TrangThai = 0;
+                         """;
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -451,7 +456,9 @@ public class HoaDonRepository {
                                               LEFT JOIN 
                                                   NhanVien nv ON hd.id_NhanVien = nv.id_NhanVien
                                               WHERE                        
-                                                  hd.TrangThaiThanhToan= 0;
+                                                  hd.TrangThaiThanhToan= 0
+                                              AND 
+                                                  hd.TrangThai=1
                          
                      """;
             PreparedStatement ps = con.prepareStatement(sql);
@@ -532,6 +539,24 @@ public class HoaDonRepository {
             e.printStackTrace(); 
             return false;
         }
+    }
+    public boolean huy_HD(String maHD){
+         int check =0;
+        ArrayList<HoaDonChiTietResponse> list = new ArrayList<>(); 
+        String query = """
+                     update HoaDon
+                      set TrangThai = 0
+                      where MaHoaDon = ?
+                      """;
+        try (Connection con = DBConnect.getConnection();
+                PreparedStatement ps = con.prepareStatement(query)) {
+                      ps.setString(1,maHD); 
+                    check =  ps.executeUpdate();
+        } catch (Exception e) {
+            // loi => nhay vao catch
+            e.printStackTrace(System.out);
+        }
+        return check >0;
     }
 }
 
