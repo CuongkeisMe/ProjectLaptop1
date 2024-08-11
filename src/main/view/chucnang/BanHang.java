@@ -65,6 +65,8 @@ public class BanHang extends javax.swing.JInternalFrame {
         txtTienSP.setEnabled(false);
         txtTongTien.setEnabled(false);
         txtGG.setEnabled(false);
+        txtMaHD.setEnabled(false);
+        txtTenNV.setEnabled(false);
         initialize();
 
     }
@@ -109,21 +111,32 @@ public class BanHang extends javax.swing.JInternalFrame {
 
     private void updateChange() {
         try {
-            // Chuyển đổi và làm tròn số tiền tổng và số tiền khách hàng trả
+            // Lấy giá trị tổng tiền và số tiền khách hàng trả từ ô văn bản
             String totalText = txtTongTien.getText().replaceAll("[^\\d.,]", "");
-            double total = Math.round(Double.parseDouble(totalText.replace(",", ".")) * 100.0) / 100.0;
-
             String amountPaidText = txtTienKH.getText().replaceAll("[^\\d.,]", "");
-            double amountPaid = Math.round(Double.parseDouble(amountPaidText.replace(",", ".")) * 100.0) / 100.0;
+
+            // Sử dụng DecimalFormat để phân tích số tiền
+            DecimalFormat decimalFormat = new DecimalFormat("#,###.##");
+            decimalFormat.setParseBigDecimal(true);
+
+            // Chuyển đổi văn bản thành số
+            Number totalNumber = decimalFormat.parse(totalText);
+            Number amountPaidNumber = decimalFormat.parse(amountPaidText);
+
+            double total = totalNumber.doubleValue();
+            double amountPaid = amountPaidNumber.doubleValue();
 
             // Tính số tiền cần trả lại
-            double change = Math.round((amountPaid - total) * 100.0) / 100.0;
+            double change = amountPaid - total;
 
+            // Cập nhật số tiền trả lại với định dạng hàng nghìn
             if (change < 0) {
                 txtTienTra.setText("Số tiền khách hàng trả không đủ");
             } else {
-                txtTienTra.setText(String.format("%.2f", change));
+                txtTienTra.setText(decimalFormat.format(change));
             }
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ: " + e.getMessage());
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ: " + e.getMessage());
         }
@@ -131,25 +144,20 @@ public class BanHang extends javax.swing.JInternalFrame {
 
     private void tongTien() {
         double total = 0.0;
-        NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
-        numberFormat.setParseIntegerOnly(true); // Đảm bảo không chuyển đổi số thập phân
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
 
-        // Duyệt qua tất cả các hàng trong bảng giỏ hàng và tính tổng tiền
         for (int i = 0; i < tblGioHang.getRowCount(); i++) {
             try {
-                // Lấy giá trị từ bảng giỏ hàng và kiểm tra dữ liệu
                 String priceStr = tblGioHang.getValueAt(i, 3).toString();
+                NumberFormat numberFormat = NumberFormat.getInstance(Locale.getDefault());
                 Number priceNumber = numberFormat.parse(priceStr);
                 double price = priceNumber.doubleValue();
 
-                // Lấy số lượng từ bảng giỏ hàng và kiểm tra dữ liệu
                 int quantity = Integer.parseInt(tblGioHang.getValueAt(i, 4).toString());
 
-                // Tính tổng tiền
                 total += price * quantity;
-                txtTienSP.setText(String.format("%.2f", total));
+                txtTienSP.setText(decimalFormat.format(total));
             } catch (ParseException | NumberFormatException e) {
-                // Xử lý lỗi chuyển đổi chuỗi sang số
                 JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ: " + e.getMessage());
                 return;
             }
@@ -158,65 +166,51 @@ public class BanHang extends javax.swing.JInternalFrame {
 
     private void updateTotal() {
         double total = 0.0;
-        DecimalFormat decimalFormat = (DecimalFormat) NumberFormat.getInstance(Locale.getDefault());
-        decimalFormat.setParseBigDecimal(true); // Đảm bảo sử dụng BigDecimal để xử lý chính xác hơn
+        DecimalFormat decimalFormat = new DecimalFormat("#,###");
 
-        // Duyệt qua tất cả các hàng trong bảng giỏ hàng và tính tổng tiền
         for (int i = 0; i < tblGioHang.getRowCount(); i++) {
             try {
-                // Lấy giá trị từ bảng giỏ hàng và kiểm tra dữ liệu
                 Object priceObj = tblGioHang.getValueAt(i, 3);
                 Object quantityObj = tblGioHang.getValueAt(i, 4);
 
                 if (priceObj == null || quantityObj == null) {
-                    continue; // Bỏ qua hàng nếu một trong các giá trị là null
+                    continue;
                 }
 
-                // Chuyển đổi giá thành số, loại bỏ dấu phân cách
                 String priceStr = priceObj.toString().replaceAll("[^\\d.,]", "");
-                Number priceNumber = decimalFormat.parse(priceStr);
+                NumberFormat numberFormat = new DecimalFormat("#,###.##");
+                Number priceNumber = numberFormat.parse(priceStr);
                 double price = priceNumber.doubleValue();
 
-                // Chuyển đổi số lượng thành số
                 int quantity = Integer.parseInt(quantityObj.toString());
 
-                // Tính tổng tiền
                 total += price * quantity;
             } catch (ParseException | NumberFormatException e) {
-                // Xử lý lỗi chuyển đổi chuỗi sang số
                 JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ: " + e.getMessage());
                 return;
             }
         }
 
-        // Cập nhật ô text tổng tiền sau khi áp dụng giảm giá
         double discount = 0.0;
         try {
-            String discountText = txtGG.getText().replaceAll("[^\\d.,]", ""); // Chỉ giữ lại số và dấu phân cách
-            Number discountNumber = decimalFormat.parse(discountText);
+            String discountText = txtGG.getText().replaceAll("[^\\d.,]", "");
+            Number discountNumber = new DecimalFormat("#,###.##").parse(discountText);
             discount = discountNumber.doubleValue();
         } catch (ParseException e) {
-            discount = 0.0; // Nếu có lỗi, không áp dụng giảm giá
+            discount = 0.0;
         }
 
-        System.out.println("Total: " + total); // Ghi nhật ký tổng tiền
-        System.out.println("Discount: " + discount); // Ghi nhật ký giảm giá
-
-        // Tính toán tổng tiền cuối cùng sau khi áp dụng giảm giá
         double finalTotal = total;
         if (discount < 100) {
-            // Tính theo phần trăm
             finalTotal = total - (total * (discount / 100));
         } else if (discount >= 100) {
-            // Tính theo giá trị tuyệt đối
             if (discount > total) {
-                discount = 0.0; // Đặt lại giảm giá về 0
+                discount = 0.0;
             }
             finalTotal = total - discount;
         }
 
-        // Hiển thị tổng tiền sau giảm giá
-        txtTongTien.setText(String.format("%.1f", finalTotal));
+        txtTongTien.setText(decimalFormat.format(finalTotal));
     }
 
     private void applyVoucher() {
@@ -249,7 +243,6 @@ public class BanHang extends javax.swing.JInternalFrame {
             txtGG.setText("Lỗi hệ thống");
         } else if (discount > 0 && discount < 100) {
             String tienSPText = txtTienSP.getText().replaceAll("[^\\d.,]", "").trim();
-            System.out.println("Value in txtTienSP: " + txtTienSP.getText());
 
             if (tienSPText.isEmpty()) {
                 txtGG.setText("0");
@@ -259,20 +252,23 @@ public class BanHang extends javax.swing.JInternalFrame {
             float tienSP;
             try {
                 // Sử dụng NumberFormat để phân tích số với dấu phẩy làm dấu thập phân
-                NumberFormat format = NumberFormat.getInstance(Locale.FRANCE); // Chọn locale phù hợp
+                NumberFormat format = NumberFormat.getInstance(Locale.getDefault());
                 Number number = format.parse(tienSPText);
                 tienSP = number.floatValue();
-                System.out.println("Converted tienSP: " + tienSP);
             } catch (ParseException e) {
-                System.out.println("ParseException: " + e.getMessage());
                 txtGG.setText("0");
                 return;
             }
 
+            // Tính số tiền giảm giá
             double tienGG = tienSP * (discount / 100.0);
-            txtGG.setText(String.format("%.2f", tienGG));
+
+            // Định dạng số tiền giảm giá với phân cách hàng nghìn
+            DecimalFormat decimalFormat = new DecimalFormat("#,###");
+            txtGG.setText(decimalFormat.format(tienGG));
         } else {
-            txtGG.setText(String.format("%.2f", discount)); // Hiển thị số tiền giảm giá với định dạng 2 chữ số thập phân
+            DecimalFormat decimalFormat = new DecimalFormat("#,###");
+            txtGG.setText(decimalFormat.format(discount));
         }
     }
 
@@ -403,21 +399,22 @@ public class BanHang extends javax.swing.JInternalFrame {
         showDataGioHang(hdctRepository.getAll(this.getIdHoaDonByMa(layMaHD())));
         showDataTableSP(banhangRepository.getAll(getFormSearch()));
     }
-    public int id_HDCT(int idhd ,int idsp){
+
+    public int id_HDCT(int idhd, int idsp) {
         return banhangRepository.getIDHDCT_Click(idhd, idsp).get(0).getIdHDCT();
     }
     public static int layID_HDCT;
-    
+
     public void addGioHang(float giaBan, Integer idSP, Integer soLuong) {
         try {
             Integer idHoaDon = this.getIdHoaDonByMa(layMaHD());
-             productExists = banhangRepository.checkSanPhamGioHang(idHoaDon, idSP);
+            productExists = banhangRepository.checkSanPhamGioHang(idHoaDon, idSP);
             if (productExists) {
                 // cong don
                 banhangRepository.updateSoLuongGioHang(idHoaDon, idSP, soLuong);
                 JOptionPane.showMessageDialog(this, "Sản phẩm đã được thêm vào giỏ hàng thành công!");
                 // them imei vaof imie da ban theo id hdct cu 
-                layID_HDCT= id_HDCT(idHoaDon, idSP);
+                layID_HDCT = id_HDCT(idHoaDon, idSP);
             } else {
                 banHangResponse = new BanHangResponse();
                 banHangResponse.setIdSanPham(idSP);
@@ -427,7 +424,7 @@ public class BanHang extends javax.swing.JInternalFrame {
                 } else {
                     JOptionPane.showMessageDialog(this, "Lỗi khi thêm sản phẩm vào giỏ hàng!");
                 }
-                
+
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -726,7 +723,11 @@ public class BanHang extends javax.swing.JInternalFrame {
 
         jLabel1.setText("SĐT");
 
+        txtSDTKH.setText("Khách hàng lẻ");
+
         jLabel2.setText("Tên KH");
+
+        txtNameKH.setText("Khách hàng lẻ");
 
         btnChon.setText("Chọn");
         btnChon.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -777,6 +778,11 @@ public class BanHang extends javax.swing.JInternalFrame {
         });
 
         cboHTTT.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cboHTTT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboHTTTActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Tổng tiền SP");
 
@@ -1016,6 +1022,7 @@ public class BanHang extends javax.swing.JInternalFrame {
         txtMaHD.setText(tblHoaDonTro.getValueAt(i, 1).toString());
         txtTenNV.setText(tblHoaDonTro.getValueAt(i, 3).toString());
         saveSelectedInvoiceId();
+        banhangRepository.updateKhachHang(10, txtMaHD.getText());
     }//GEN-LAST:event_tblHoaDonTroMouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -1050,73 +1057,173 @@ public class BanHang extends javax.swing.JInternalFrame {
         int i = tblHoaDonTro.getSelectedRow();
         int selectedIndex = cboHTTT.getSelectedIndex();
         Object selectedItem = cboMaVoucher.getSelectedItem();
+        int chon = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn thanh toán không");
 
-        if (selectedItem instanceof Vouchers) {
-            Vouchers selectedVoucher = (Vouchers) selectedItem;
-            int idVoucher = selectedVoucher.getIdVoucher();
+        if (chon == JOptionPane.YES_OPTION) {
+            boolean chuyenKhoan = cboHTTT.getItemAt(selectedIndex).equalsIgnoreCase("Chuyển khoản");
 
-            try {
-                // Lấy số tiền từ các ô text và loại bỏ ký tự không phải số
-                double tienKhachTra = Double.parseDouble(txtTienKH.getText().replaceAll("[^\\d.,]", "").replace(",", "."));
-                double tongTien = Double.parseDouble(txtTongTien.getText().replaceAll("[^\\d.,]", "").replace(",", "."));
+            if (selectedItem instanceof Vouchers) {
+                Vouchers selectedVoucher = (Vouchers) selectedItem;
+                int idVoucher = selectedVoucher.getIdVoucher();
 
-                // Làm tròn số tiền để so sánh
-                tienKhachTra = Math.round(tienKhachTra * 100.0) / 100.0;
-                tongTien = Math.round(tongTien * 100.0) / 100.0;
+                try {
+                    // Sử dụng DecimalFormat để phân tích số với dấu phân cách hàng nghìn và dấu thập phân
+                    DecimalFormat decimalFormat = new DecimalFormat("#,###.##");
+                    decimalFormat.setParseBigDecimal(true);
 
-                // Đặt ngưỡng sai số nhỏ
-                double epsilon = 0.01;
+                    // Lấy số tiền từ các ô text và loại bỏ ký tự không phải số
+                    String tienKhachTraText = chuyenKhoan ? "0" : txtTienKH.getText().replaceAll("[^\\d.,]", "");
+                    String tongTienText = txtTongTien.getText().replaceAll("[^\\d.,]", "");
 
-                if (tienKhachTra + epsilon >= tongTien) {
-                    int currentInvoiceId = Integer.parseInt(tblHoaDonTro.getValueAt(i, 0).toString());
+                    Number tienKhachTraNumber = decimalFormat.parse(tienKhachTraText);
+                    Number tongTienNumber = decimalFormat.parse(tongTienText);
 
-                    // Lấy dữ liệu từ các ô text
-                    double tienVoucher = Double.parseDouble(txtGG.getText().replaceAll("[^\\d.,]", "").replace(",", "."));
-                    double thanhTien = Double.parseDouble(txtTongTien.getText().replaceAll("[^\\d.,]", "").replace(",", "."));
-                    String phuongThucThanhToan = cboHTTT.getItemAt(selectedIndex);
-                    int trangThaiThanhToan = 1;
+                    double tienKhachTra = tienKhachTraNumber.doubleValue();
+                    double tongTien = tongTienNumber.doubleValue();
 
-                    boolean updated = banhangRepository.updateInvoiceStatus(this.currentInvoiceId, idVoucher, tongTien, tienVoucher, thanhTien, phuongThucThanhToan, trangThaiThanhToan);
+                    // Làm tròn số tiền để so sánh
+                    tienKhachTra = Math.round(tienKhachTra * 100.0) / 100.0;
+                    tongTien = Math.round(tongTien * 100.0) / 100.0;
 
-                    if (updated) {
-                        double tienCanTraLai = tienKhachTra - tongTien;
-                        txtTienTra.setText(String.format("%.2f", tienCanTraLai));
+                    // Đặt ngưỡng sai số nhỏ
+                    double epsilon = 0.01;
 
-                        ArrayList<HoaDonTro> hoaDonList = hdsp.getAllHoaDon();
+                    if (chuyenKhoan) {
+                        // Nếu là "Chuyển khoản", không cần kiểm tra tiền khách trả
+                        int currentInvoiceId = Integer.parseInt(tblHoaDonTro.getValueAt(i, 0).toString());
+                        txtTienKH.setEnabled(false);
+                        String tienVoucherText = txtGG.getText().replaceAll("[^\\d.,]", "");
+                        Number tienVoucherNumber = decimalFormat.parse(tienVoucherText);
+                        double tienVoucher = tienVoucherNumber.doubleValue();
 
-                        if (hoaDonList != null) {
-                            this.showDatahoadon(hoaDonList);
+                        double thanhTien = tongTien - tienVoucher;
+                        String phuongThucThanhToan = cboHTTT.getItemAt(selectedIndex);
+                        int trangThaiThanhToan = 1;
+
+                        boolean updated = banhangRepository.updateInvoiceStatus(this.currentInvoiceId, idVoucher, tongTien, tienVoucher, thanhTien, phuongThucThanhToan, trangThaiThanhToan);
+
+                        if (updated) {
+                            double tienCanTraLai = 0.0; // Không cần tính tiền trả lại khi chuyển khoản
+                            txtTienTra.setText(decimalFormat.format(tienCanTraLai));
+
+                            ArrayList<HoaDonTro> hoaDonList = hdsp.getAllHoaDon();
+
+                            if (hoaDonList != null) {
+                                this.showDatahoadon(hoaDonList);
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Không thể lấy dữ liệu hóa đơn.");
+                            }
+
+                            JOptionPane.showMessageDialog(null, "Thanh toán thành công!");
+                            showDatahoadon(hdsp.getAllHoaDon());
+                            clearCartTable();
+                            txtSDTKH.setText("Khách hàng lẻ");
+                            txtNameKH.setText("Khách hàng lẻ");
+                            txtMaHD.setText("");
+                            txtTenNV.setText("");
+                            txtTienKH.setText("");
+                            txtTienTra.setText("");
+                            txtTongTien.setText("");
+                            txtTienSP.setText("");
                         } else {
-                            JOptionPane.showMessageDialog(null, "Không thể lấy dữ liệu hóa đơn.");
+                            JOptionPane.showMessageDialog(null, "Lỗi khi cập nhật trạng thái hóa đơn.");
                         }
-
-                        JOptionPane.showMessageDialog(null, "Thanh toán thành công!");
-                        showDatahoadon(hdsp.getAllHoaDon());
-                        txtSDTKH.setText("");
-                        txtNameKH.setText("");
-                        txtMaHD.setText("");
-                        txtTenNV.setText("");
-                        txtTienKH.setText("");
-                        txtTienTra.setText("");
-                        txtTongTien.setText("");
-                        txtTienSP.setText("");
                     } else {
-                        JOptionPane.showMessageDialog(null, "Lỗi khi cập nhật trạng thái hóa đơn.");
+                        if (tienKhachTra + epsilon >= tongTien) {
+                            int currentInvoiceId = Integer.parseInt(tblHoaDonTro.getValueAt(i, 0).toString());
+
+                            // Lấy dữ liệu từ các ô text
+                            String tienVoucherText = txtGG.getText().replaceAll("[^\\d.,]", "");
+                            Number tienVoucherNumber = decimalFormat.parse(tienVoucherText);
+                            double tienVoucher = tienVoucherNumber.doubleValue();
+
+                            double thanhTien = tongTien - tienVoucher;
+                            String phuongThucThanhToan = cboHTTT.getItemAt(selectedIndex);
+                            int trangThaiThanhToan = 1;
+
+                            boolean updated = banhangRepository.updateInvoiceStatus(this.currentInvoiceId, idVoucher, tongTien, tienVoucher, thanhTien, phuongThucThanhToan, trangThaiThanhToan);
+
+                            if (updated) {
+                                double tienCanTraLai = tienKhachTra - tongTien;
+                                txtTienTra.setText(decimalFormat.format(tienCanTraLai));
+
+                                ArrayList<HoaDonTro> hoaDonList = hdsp.getAllHoaDon();
+
+                                if (hoaDonList != null) {
+                                    this.showDatahoadon(hoaDonList);
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Không thể lấy dữ liệu hóa đơn.");
+                                }
+
+                                JOptionPane.showMessageDialog(null, "Thanh toán thành công!");
+                                showDatahoadon(hdsp.getAllHoaDon());
+                                clearCartTable();
+                                txtSDTKH.setText("Khách hàng lẻ");
+                                txtNameKH.setText("Khách hàng lẻ");
+                                txtMaHD.setText("");
+                                txtTenNV.setText("");
+                                txtTienKH.setText("");
+                                txtTienTra.setText("");
+                                txtTongTien.setText("");
+                                txtTienSP.setText("");
+                            } else {
+                                JOptionPane.showMessageDialog(null, "Lỗi khi cập nhật trạng thái hóa đơn.");
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Số tiền khách hàng trả không đủ!");
+                        }
                     }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Số tiền khách hàng trả không đủ!");
+                } catch (ParseException e) {
+                    JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ: " + e.getMessage());
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ: " + e.getMessage());
                 }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ: " + e.getMessage());
+            } else {
+                JOptionPane.showMessageDialog(null, "Chưa chọn mã voucher hoặc không hợp lệ.");
             }
-        } else {
-            JOptionPane.showMessageDialog(null, "Chưa chọn mã voucher hoặc không hợp lệ.");
         }
     }//GEN-LAST:event_jButton6ActionPerformed
+    private void clearCartTable() {
+        DefaultTableModel model = (DefaultTableModel) tblGioHang.getModel();
+        model.setRowCount(0); // Xóa tất cả các hàng trong bảng
+    }
+
+    private void clearAllFields() {
+        showDatahoadon(hdsp.getAllHoaDon());
+        clearCartTable();
+        txtSDTKH.setText("Khách hàng lẻ");
+        txtNameKH.setText("Khách hàng lẻ");
+        txtMaHD.setText("");
+        txtTenNV.setText("");
+        txtTienKH.setText("");
+        txtTienTra.setText("");
+        txtTongTien.setText("");
+        txtTienSP.setText("");
+    }
+
+    private void handlePaymentMethodChange() {
+        int selectedIndex = cboHTTT.getSelectedIndex();
+        String selectedPaymentMethod = cboHTTT.getItemAt(selectedIndex);
+
+        if (selectedPaymentMethod != null) {
+            boolean isCashPayment = selectedPaymentMethod.equalsIgnoreCase("Tiền mặt");
+
+            // Nếu chọn "Chuyển khoản", khóa ô nhập tiền khách hàng
+            txtTienKH.setEnabled(isCashPayment);
+
+            // Nếu cần, làm sạch giá trị ô nhập tiền khách hàng khi chuyển sang phương thức thanh toán khác
+            if (!isCashPayment) {
+                txtTienKH.setText("");
+            }
+        } else {
+            // Xử lý trường hợp không có lựa chọn hợp lệ
+            txtTienKH.setEnabled(true); // Có thể kích hoạt lại ô nhập tiền khách hàng hoặc xử lý theo yêu cầu
+        }
+    }
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
-        txtSDTKH.setText("");
-        txtNameKH.setText("");
+        txtSDTKH.setText("Khách hàng lẻ");
+        txtNameKH.setText("Khách hàng lẻ");
         txtMaHD.setText("");
         txtTenNV.setText("");
         txtTienKH.setText("");
@@ -1154,6 +1261,11 @@ public class BanHang extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
 
     }//GEN-LAST:event_rdotmKeyReleased
+
+    private void cboHTTTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboHTTTActionPerformed
+        // TODO add your handling code here:
+        handlePaymentMethodChange();
+    }//GEN-LAST:event_cboHTTTActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -212,7 +212,7 @@ public class BanHangSPRepositories {
         }
         return check > 0;
     }
-    
+
     public boolean checkSanPhamGioHang(Integer idHD, Integer idSP) {
         String sql = """
                      SELECT SoLuong FROM HoaDonChiTiet 
@@ -256,6 +256,19 @@ public class BanHangSPRepositories {
         try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idKhachHang); // Cập nhật id khách hàng
             ps.setString(2, maHDon);   // Cập nhật id hóa đơn
+            check = ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
+        }
+        return check > 0;
+    }
+
+    public Boolean updateKhachHang(int idKhachHang, String maHoaDon) {
+        String sql = "UPDATE HoaDon SET id_KhachHang=? WHERE MaHoaDon=?";
+        int check = 0;
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idKhachHang); // Cập nhật id khách hàng
+            ps.setString(2, maHoaDon);  // Cập nhật mã hóa đơn
             check = ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace(System.out);
@@ -375,9 +388,9 @@ public class BanHangSPRepositories {
         }
         return isUpdated;
     }
-    
+
     //
-     public ArrayList<BanHangResponse> getIDHDCT_Click(Integer idHd, Integer idSP) {
+    public ArrayList<BanHangResponse> getIDHDCT_Click(Integer idHd, Integer idSP) {
         ArrayList<BanHangResponse> listImeiChiTiet = new ArrayList<>();
         String sql = """
                     select id_HDCT from HoaDonChiTiet where id_HoaDon = ? and id_SanPham = ?
@@ -389,7 +402,6 @@ public class BanHangSPRepositories {
             while (rs.next()) {
                 BanHangResponse spr = BanHangResponse.builder()
                         .idHDCT(rs.getInt(1))
-                        
                         .build();
                 listImeiChiTiet.add(spr);
             }

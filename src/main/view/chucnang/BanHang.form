@@ -682,6 +682,9 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtSDTKH">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Kh&#xe1;ch h&#xe0;ng l&#x1ebb;"/>
+              </Properties>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel2">
               <Properties>
@@ -689,6 +692,9 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="txtNameKH">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Kh&#xe1;ch h&#xe0;ng l&#x1ebb;"/>
+              </Properties>
             </Component>
             <Component class="javax.swing.JButton" name="btnChon">
               <Properties>
@@ -724,6 +730,9 @@
               </StringArray>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cboHTTTActionPerformed"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
           </AuxValues>
