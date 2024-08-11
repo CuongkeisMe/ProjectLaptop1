@@ -218,4 +218,45 @@ public class TaiKhoanRepository {
         }
         return list;
     }
+    
+    public ArrayList<main.entity.TaiKhoanEtity> getAllDN() {
+        ArrayList<main.entity.TaiKhoanEtity> list = new ArrayList<>();
+        String sql = """
+                            SELECT 
+                                                 tk.id_TaiKhoan, 
+                                                 tk.UserName, 
+                                                 tk.Pass, 
+                                                 vt.LoaiVaiTro, 
+                                                 tk.TrangThai, 
+                                                 nv.id_NhanVien,  
+                                                 nv.MaNhanVien,
+                                                 nv.HoTen
+                                             FROM dbo.TaiKhoan tk
+                                             left   JOIN dbo.VaiTro vt ON tk.id_VaiTro = vt.id_VaiTro
+                                             left   JOIN dbo.NhanVien nv ON tk.id_NhanVien = nv.id_NhanVien                       			
+                    
+   
+               """;
+        try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+
+                main.entity.TaiKhoanEtity tk = main.entity.TaiKhoanEtity.builder()
+                        .id(rs.getInt("id_TaiKhoan"))
+                        .idNhanVien(rs.getInt("id_NhanVien"))
+                        .userName(rs.getString("UserName"))
+                        .Pass(rs.getString("Pass"))
+                        .vaiTro(rs.getInt("LoaiVaiTro")) // ánh xạ với LoaiVaiTro từ bảng VaiTro
+                        .TrangThai(rs.getInt("TrangThai"))
+                        .maNhanVien(rs.getString("MaNhanVien"))
+                        .tenNhanVien(rs.getString("HoTen"))
+                        .build();
+                list.add(tk);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

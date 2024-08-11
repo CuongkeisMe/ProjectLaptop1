@@ -612,7 +612,7 @@ public class NhanVienView extends javax.swing.JInternalFrame {
             String sdt = txtSdt.getText();
             String regex = "^(0|\\+84)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])[0-9]{7}$";//chứa số điện thoại 10 số hay 11 số, đầu 09 or +84
             if (sdt.length() > 0) {
-                if (!sdt.matches(regex)) {// địa chỉ sai định dạng
+                if (!sdt.matches(regex)) {
                     JOptionPane.showMessageDialog(this, "Sai định dạng, Nhập lại số điện thoại,VD: 0976766682 hoặc +84961659480");
                     txtSdt.requestFocus();
                     return;
@@ -628,7 +628,7 @@ public class NhanVienView extends javax.swing.JInternalFrame {
             String email = txtEmail.getText();
             String regex = "^(?=[A-Za-z0-9._%+-]{1,64}@)[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9.-]{1,255}\\.[A-Za-z]{2,63}$";//chứa chữ cái, số, khoảng trắng, dấu phẩy, dấu chấm, dấu gạch ngang và dấu gạch chéo.
             if (email.length() > 0) {
-                if (!email.matches(regex)) {// địa chỉ sai định dạng
+                if (!email.matches(regex)) {
                     JOptionPane.showMessageDialog(this, "Sai định dạng, Nhập lại Email,Vd: doly862005@gmail.com");
                     txtEmail.requestFocus();
                     return;

@@ -75,7 +75,7 @@ public class HoaDon extends javax.swing.JInternalFrame {
     }
 
     private void loadSet() {
-        index2 = 0;
+        index = 0;
         setForm2();
     }
 
@@ -84,7 +84,7 @@ public class HoaDon extends javax.swing.JInternalFrame {
            System.out.println("model1 is null");
            return;
        }
-       if (index2 < 0 || index2 >= model1.getRowCount()) {
+       if (index2 < 0 || index >= model1.getRowCount()) {
            return;
        }
        int columnCount = model1.getColumnCount();
@@ -95,13 +95,13 @@ public class HoaDon extends javax.swing.JInternalFrame {
        symbols.setGroupingSeparator(',');
        symbols.setDecimalSeparator('.');
        DecimalFormat decimalFormat = new DecimalFormat("#,###.##", symbols);
-       Object maHoaDon2 = model1.getValueAt(index2, 0);
+       Object maHoaDon2 = model1.getValueAt(index, 0);
        txtMaHoaDon2.setText(maHoaDon2 != null ? maHoaDon2.toString() : "");
-       Object tenSanPham = model1.getValueAt(index2, 1);
+       Object tenSanPham = model1.getValueAt(index, 1);
        txtTenSanPham.setText(tenSanPham != null ? tenSanPham.toString() : "");
-       Object soLuong = model1.getValueAt(index2, 2);
+       Object soLuong = model1.getValueAt(index, 2);
        txtSoLuong.setText(soLuong != null ? soLuong.toString() : "");
-       Object donGiaObj = model1.getValueAt(index2, 3);
+       Object donGiaObj = model1.getValueAt(index, 3);
        if (donGiaObj != null) {
            try {
                double price = Double.parseDouble(donGiaObj.toString());
@@ -246,6 +246,12 @@ public class HoaDon extends javax.swing.JInternalFrame {
         txtSoLuong.setText("");
         txtDonGia.setText("");
         model1.setRowCount(0);
+    }
+    private void clearForm1(){
+        txtMaHoaDon2.setText("");
+        txtTenSanPham.setText("");
+        txtSoLuong.setText("");
+        txtDonGia.setText("");
     }
     private boolean checkSearchText(String text) {
         if (text.isEmpty()) {
@@ -1116,11 +1122,10 @@ public class HoaDon extends javax.swing.JInternalFrame {
     private void tblHoaDon1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHoaDon1MouseClicked
         // TODO add your handling code here:
         index = tblHoaDon1.getSelectedRow();
-        setForm1();
         fillTable3();
+        clearForm1();
         setForm1();
         fillTable2();
-        
         loadSet();
     }//GEN-LAST:event_tblHoaDon1MouseClicked
 
@@ -1182,10 +1187,10 @@ public class HoaDon extends javax.swing.JInternalFrame {
             cell = row.createCell(11, CellType.STRING);
             cell.setCellValue(hd.getTrangThaiThanhToan() == 0 ? "Chưa Thanh Toán" : "Đã Thanh Toán");
         }
-        File file = new File("D://danhsach.xlsx");
+        File file = new File("D:\\ProjectLaptop1\\ProjectLaptop1//danhsach.xlsx");
         try (FileOutputStream fos = new FileOutputStream(file)) {
             workbook.write(fos);
-            JOptionPane.showMessageDialog(null, "In thành công D:\\danhsach.xlsx");
+            JOptionPane.showMessageDialog(null, "In thành công D:\\ProjectLaptop1\\ProjectLaptop1//danhsach.xlsx");
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(null, "Lỗi: File không tìm thấy.");

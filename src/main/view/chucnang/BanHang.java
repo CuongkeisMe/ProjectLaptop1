@@ -148,6 +148,11 @@ public class BanHang extends javax.swing.JInternalFrame {
         double total = 0.0;
         DecimalFormat decimalFormat = new DecimalFormat("#,###");
 
+        if (tblGioHang.getRowCount() == 0) {
+            txtTienSP.setText(decimalFormat.format(total));
+            return;
+        }
+
         for (int i = 0; i < tblGioHang.getRowCount(); i++) {
             try {
                 String priceStr = tblGioHang.getValueAt(i, 3).toString();
@@ -158,12 +163,13 @@ public class BanHang extends javax.swing.JInternalFrame {
                 int quantity = Integer.parseInt(tblGioHang.getValueAt(i, 4).toString());
 
                 total += price * quantity;
-                txtTienSP.setText(decimalFormat.format(total));
             } catch (ParseException | NumberFormatException e) {
                 JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ: " + e.getMessage());
                 return;
             }
         }
+
+        txtTienSP.setText(decimalFormat.format(total));
     }
 
     private void updateTotal() {
@@ -1072,7 +1078,7 @@ public class BanHang extends javax.swing.JInternalFrame {
         txtMaHD.setText(tblHoaDonTro.getValueAt(i, 1).toString());
         txtTenNV.setText(tblHoaDonTro.getValueAt(i, 3).toString());
         saveSelectedInvoiceId();
-        banhangRepository.updateKhachHang(10, txtMaHD.getText());
+        banhangRepository.updateKhachHang(1, txtMaHD.getText());
     }//GEN-LAST:event_tblHoaDonTroMouseClicked
 
     private void tblGioHangMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGioHangMousePressed
@@ -1266,7 +1272,7 @@ public class BanHang extends javax.swing.JInternalFrame {
             txtTienKH.setEnabled(true); // Có thể kích hoạt lại ô nhập tiền khách hàng hoặc xử lý theo yêu cầu
         }
     }
-    
+
     private void addMaSPHuy_List() {
         listMaSPHuyHD.clear();
         for (int i = 0; i < tblGioHang.getRowCount(); i++) {
@@ -1369,8 +1375,8 @@ public class BanHang extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(this, "Chọn Hóa Đơn Muốn Hủy");
             return;
         }
-          int chon = JOptionPane.showConfirmDialog(this, "Bạn Có Muốn Hủy Không");
-          if (chon==0) {
+        int chon = JOptionPane.showConfirmDialog(this, "Bạn Có Muốn Hủy Không");
+        if (chon == 0) {
             xoaAllSpBanHang();
             hdsp.huy_HD(layMaHD());
             this.showDatahoadon(hdsp.getAllHoaDon());
@@ -1378,10 +1384,16 @@ public class BanHang extends javax.swing.JInternalFrame {
             this.showDataTableSP(banhangRepository.getAllsp());
             JOptionPane.showMessageDialog(this, "Hủy Hóa Đơn Thành Công");
         }
+        txtMaHD.setText("");
+        txtTenNV.setText("");
+        txtTienSP.setText("");
+        txtTienKH.setText("");
+        txtTienTra.setText("");
+        txtTongTien.setText("");
     }//GEN-LAST:event_btnHuyHoaDonActionPerformed
 
     private void btnClearGH1FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_btnClearGH1FocusGained
-        
+
     }//GEN-LAST:event_btnClearGH1FocusGained
 
     private void txtSearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSearchFocusGained
@@ -1399,6 +1411,11 @@ public class BanHang extends javax.swing.JInternalFrame {
         JOptionPane.showMessageDialog(this, "Xóa Thành Công");
         dtmGioHang.setRowCount(0);
         showDataTableSP(banhangRepository.getAll(getFormSearch()));
+        txtTienSP.setText("");
+        txtTienKH.setText("");
+        txtTienTra.setText("");
+        txtTongTien.setText("");
+
     }//GEN-LAST:event_btnClearGHActionPerformed
 
 

@@ -354,7 +354,7 @@ public class BanHangSPRepositories {
             con = DBConnect.getConnection();
 
             // Câu lệnh SQL cập nhật
-            String sql = "  UPDATE HoaDon SET id_Voucher=?, TongTien=?, TienVoucher=?, ThanhTien=?, PhuongThucThanhToan=?, TrangThaiThanhToan=?,GhiChu='Đã thanh toán' WHERE [MaHoaDon]=?";
+            String sql = "  UPDATE HoaDon SET id_Voucher=?, TongTien=?, TienVoucher=?, ThanhTien=?, PhuongThucThanhToan=?, TrangThaiThanhToan=?,GhiChu= N'Đã thanh toán' WHERE [MaHoaDon]=?";
             ps = con.prepareStatement(sql);
 
             // Set giá trị cho các tham số

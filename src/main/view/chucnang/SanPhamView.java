@@ -179,15 +179,15 @@ public class SanPhamView extends javax.swing.JInternalFrame {
         }
     }
 
-    public void chonAnh() {
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File file = fileChooser.getSelectedFile();
-            XImage.save(file);
-            ImageIcon icon = XImage.read(file.getName());
-            lbHinhAnh.setIcon(icon);
-            lbHinhAnh.setToolTipText(file.getName());
-        }
+   public void chonAnh() {
+    if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+        File file = fileChooser.getSelectedFile();
+        XImage.save(file);
+        ImageIcon resizedIcon = resizeImage(file.getName(), 250, 200); // Example size: 100x100
+        lbHinhAnh.setIcon(resizedIcon);
+        lbHinhAnh.setToolTipText(file.getName());
     }
+}
 
     public void cauhinhForm() {
         this.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -538,7 +538,7 @@ public class SanPhamView extends javax.swing.JInternalFrame {
                             .addComponent(lbHinhAnh, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel19)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(5, 5, 5)
                         .addComponent(txtGiaNhap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel20)

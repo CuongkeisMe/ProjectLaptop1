@@ -186,15 +186,23 @@ public class DangNhap extends javax.swing.JFrame {
     }
 
     public void login() {
-
         TaiKhoanRepository rp = new TaiKhoanRepository();
-        ArrayList<TaiKhoanEtity> list = rp.getAll();
+        ArrayList<TaiKhoanEtity> list = rp.getAllDN();
 
         for (TaiKhoanEtity tk : list) {
-            if (txtTaiKhoan.getText().equals(tk.getUserName())
-                    && txtMatKhau.getText().equals(tk.getPass())) {
+            if (txtTaiKhoan.getText().equalsIgnoreCase(tk.getUserName())
+                    && txtMatKhau.getText().equalsIgnoreCase(tk.getPass())) {
+
+                // Kiểm tra trạng thái tài khoản
+                if (tk.getTrangThai() == 0) { // Trạng thái 0 có nghĩa là tài khoản đã ngừng hoạt động
+                    JOptionPane.showMessageDialog(this, "Tài Khoản Đã Ngừng Hoạt Động");
+                    return;
+                }
+
+                // Nếu tài khoản hợp lệ và hoạt động
                 JOptionPane.showMessageDialog(this, "Đăng Nhập Thành Công Bạn Là: "
                         + (tk.getVaiTro() == 1 ? "Admin" : "Nhân Viên"));
+
                 // Lưu thông tin vào biến toàn cục
                 ToanCuc.setVaiTro(tk.getVaiTro());
                 ToanCuc.setId(tk.getId()); // ID tài khoản
@@ -202,15 +210,15 @@ public class DangNhap extends javax.swing.JFrame {
                 ToanCuc.setMaNhanVien(tk.getMaNhanVien());
                 ToanCuc.setTenNhanVien(tk.getTenNhanVien());
 
+                // Mở Menu và đóng form đăng nhập
                 Menu m = new Menu();
                 m.setVisible(true);
                 this.dispose();
                 return;
             }
         }
-        JOptionPane.showMessageDialog(this, "Sai UserName hoặc PassWord!");
     }
-    
+
     private void btnLamMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLamMoiActionPerformed
         txtMatKhau.setText("");
         txtTaiKhoan.setText("");
@@ -218,7 +226,7 @@ public class DangNhap extends javax.swing.JFrame {
 
     private void btnDangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDangNhapActionPerformed
         if (check()) {
-            login(); 
+            login();
         }
     }//GEN-LAST:event_btnDangNhapActionPerformed
 
@@ -249,5 +257,4 @@ public class DangNhap extends javax.swing.JFrame {
     private javax.swing.JTextField txtTaiKhoan;
     // End of variables declaration//GEN-END:variables
 
-  
 }

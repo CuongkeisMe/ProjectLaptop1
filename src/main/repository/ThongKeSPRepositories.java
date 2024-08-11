@@ -21,23 +21,25 @@ public class ThongKeSPRepositories {
         ArrayList<ThongKe> list = new ArrayList<>();
         String sql = """
                     SELECT 
-                        SanPham.MaSanPham AS 'MaSP',
-                        SanPham.TenSanPham AS 'TenSP',
-                        SanPham.GiaBan AS 'GiaSP',
-                        SanPham.SoLuong AS 'TongSoLuongSP',
-                        ISNULL(SUM(HoaDonChiTiet.SoLuong), 0) AS 'SoSPDaBan',
-                        ISNULL(SUM(HoaDonChiTiet.TongTien), 0) AS 'DoanhThu'
-                    FROM 
-                        SanPham
-                    LEFT JOIN 
-                        HoaDonChiTiet ON SanPham.id_SanPham = HoaDonChiTiet.id_SanPham
-                    WHERE 
-                        SanPham.MaSanPham LIKE ? OR SanPham.TenSanPham LIKE ?
-                    GROUP BY 
-                        SanPham.MaSanPham, 
-                        SanPham.TenSanPham, 
-                        SanPham.GiaBan, 
-                        SanPham.SoLuong;
+                            SanPham.MaSanPham AS 'MaSP',
+                            SanPham.TenSanPham AS 'TenSP',
+                            SanPham.GiaBan AS 'GiaSP',
+                            SanPham.SoLuong AS 'TongSoLuongSP',
+                            ISNULL(SUM(HoaDonChiTiet.SoLuong), 0) AS 'SoSPDaBan',
+                            ISNULL(SUM(HoaDonChiTiet.TongTien), 0) AS 'DoanhThu'
+                        FROM 
+                            SanPham
+                        LEFT JOIN 
+                            HoaDonChiTiet ON SanPham.id_SanPham = HoaDonChiTiet.id_SanPham
+                        WHERE 
+                            SanPham.MaSanPham LIKE ? OR SanPham.TenSanPham LIKE ?
+                        GROUP BY 
+                            SanPham.MaSanPham, 
+                            SanPham.TenSanPham, 
+                            SanPham.GiaBan, 
+                            SanPham.SoLuong
+                        HAVING 
+                            ISNULL(SUM(HoaDonChiTiet.SoLuong), 0) > 0;
                      """;
         try (Connection con = DBConnect.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
