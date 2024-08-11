@@ -684,6 +684,9 @@
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JTextField" name="txtSearch">
+                  <Events>
+                    <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="txtSearchFocusGained"/>
+                  </Events>
                 </Component>
                 <Container class="javax.swing.JScrollPane" name="jScrollPane1">
                   <AuxValues>

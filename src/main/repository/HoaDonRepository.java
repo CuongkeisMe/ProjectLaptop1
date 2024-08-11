@@ -452,12 +452,13 @@ public class HoaDonRepository {
                                                   NhanVien nv ON hd.id_NhanVien = nv.id_NhanVien
                                               WHERE                        
                                                   hd.TrangThaiThanhToan= 0;
+                         
                      """;
             PreparedStatement ps = con.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 HoaDonTro hd = new HoaDonTro().builder()
-                        .idHoaDon(rs.getInt(1)) // Assuming id_HoaDon is an integer
+                        .idHoaDon(rs.getInt(1))
                         .maHoaDon(rs.getString(2))
                         .ngayTao(rs.getDate(3))
                         .maNhanVien(rs.getString(4))

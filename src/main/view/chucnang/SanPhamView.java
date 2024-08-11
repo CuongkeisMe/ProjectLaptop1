@@ -136,8 +136,6 @@ public class SanPhamView extends javax.swing.JInternalFrame {
             Sheet sheet = workbook.getSheetAt(0);
             for (Row row : sheet) {
                 Cell imeiCell = row.getCell(0);
-                Cell maSPCell = row.getCell(1);
-                // Kiểm tra kiểu dữ liệu của ô Imei
                 String imeiValue = null;
                 if (imeiCell != null) {
                     switch (imeiCell.getCellType()) {
@@ -151,21 +149,9 @@ public class SanPhamView extends javax.swing.JInternalFrame {
                             break;
                     }
                 }
-                String maSP = null;
-                if (maSPCell != null) {
-                    switch (maSPCell.getCellType()) {
-                        case STRING:
-                            maSP = maSPCell.getStringCellValue();
-                            break;
-                        case NUMERIC:
-                            maSP = String.valueOf(maSPCell.getNumericCellValue());
-                            break;
-                        default:
-                            break;
-                    }
-                }
 
-                if (imeiValue != null &&  maSP != null) {
+                if (imeiValue != null) {
+                    String maSP = (String) cboMaSP.getSelectedItem();
                     Integer idSP = sanphamRepository.getIdSPByMa(maSP);
                     if (idSP != null) {
                         Imei imei = new Imei(imeiValue);
@@ -721,6 +707,12 @@ public class SanPhamView extends javax.swing.JInternalFrame {
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel1.setText("Tìm kiếm");
 
+        txtSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtSearchFocusGained(evt);
+            }
+        });
+
         tblQuanLySP.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -1237,6 +1229,14 @@ public class SanPhamView extends javax.swing.JInternalFrame {
             txtMaImei.requestFocus();
             return;
         }
+        if (!txtMaImei.getText().trim().matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "Imei Phải Là 1 Dãy Số");
+            return;
+        }
+        if (txtMaImei.getText().trim().length() != 15) {
+            JOptionPane.showMessageDialog(this, "Mã Imei Phải Đúng 15 Số");
+            return;
+        }
         for (Imei imei : imeiRepository.getAll()) {
             if (txtMaImei.getText().equals(imei.getMaImei())) {
                 JOptionPane.showMessageDialog(this, "Mã Imei này đã tồn tại !");
@@ -1282,6 +1282,7 @@ public class SanPhamView extends javax.swing.JInternalFrame {
                     txtGiaBan.setText("");
                     txtGiaNhap.setText("");
                     lbHinhAnh.setIcon(null);
+                    lbSoLuong.setText("");
                     this.showDataTableSanPham(sanphamRepository.getAll(getFormSearch()));
                     this.showDataTableImei(sanphamRepository.getAll(getFormSearch()));
                     this.showComboboxSanPham();
@@ -1423,6 +1424,11 @@ public class SanPhamView extends javax.swing.JInternalFrame {
             }
         }
     }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void txtSearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSearchFocusGained
+        txtSearch.setText("");
+        this.showDataTableSanPham(sanphamRepository.getAll(getFormSearch()));
+    }//GEN-LAST:event_txtSearchFocusGained
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
