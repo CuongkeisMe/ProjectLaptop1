@@ -29,6 +29,7 @@ public class ThongKe extends javax.swing.JInternalFrame {
 
     private ThongKeSPRepositories sprp;
     private ThongKeDTRepositories dtrp;
+    DecimalFormat decimalFormat = new DecimalFormat("#,##0");
 
     public ThongKe() {
         initComponents();
@@ -63,8 +64,8 @@ public class ThongKe extends javax.swing.JInternalFrame {
             int totalProducts = ThongKeSPRepositories.getTotalProducts();
             int totalProductsSold = ThongKeSPRepositories.getTotalProductsSold();
             BigDecimal totalProductsDT = ThongKeSPRepositories.getTotalProductsDT();
-
-            totalProductsLabel4.setText(totalProductsDT.toString());
+            DecimalFormat formatter = new DecimalFormat("#,###");
+            totalProductsLabel4.setText(formatter.format(totalProductsDT));
             totalProductsLabel2.setText(Integer.toString(totalProductsSold));
             totalProductsLabel1.setText(Integer.toString(totalProducts));
 
@@ -104,14 +105,15 @@ public class ThongKe extends javax.swing.JInternalFrame {
             int totalProducts = ThongKeSPRepositories.getTotalProducts();
             int totalProductsSoldThang = ThongKeSPRepositories.getTotalProductsSoldThang();
             BigDecimal totalProductsDTT = ThongKeSPRepositories.getTotalProductsDTT();
+            DecimalFormat formatter = new DecimalFormat("#,###");
 
-            totalProductsLabel4.setText(totalProductsDTT.toString());
+            // Định dạng dữ liệu doanh thu tháng
+            totalProductsLabel4.setText(formatter.format(totalProductsDTT));
             totalProductsLabel2.setText(Integer.toString(totalProductsSoldThang));
             totalProductsLabel1.setText(Integer.toString(totalProducts));
 
         } catch (SQLException e) {
-
-            // Optional: Show an error message to the user in the UI
+            // Hiển thị thông báo lỗi cho người dùng
             JOptionPane.showMessageDialog(null, "Error retrieving data from database. Please check the logs for details.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -121,14 +123,15 @@ public class ThongKe extends javax.swing.JInternalFrame {
             int totalProducts = ThongKeSPRepositories.getTotalProducts();
             int totalProductsSoldNam = ThongKeSPRepositories.getTotalProductsSoldNam();
             BigDecimal totalProductsDTN = ThongKeSPRepositories.getTotalProductsDTN();
+            DecimalFormat formatter = new DecimalFormat("#,###");
 
-            totalProductsLabel4.setText(totalProductsDTN.toString());
+            // Định dạng dữ liệu doanh thu năm
+            totalProductsLabel4.setText(formatter.format(totalProductsDTN));
             totalProductsLabel2.setText(Integer.toString(totalProductsSoldNam));
             totalProductsLabel1.setText(Integer.toString(totalProducts));
 
         } catch (SQLException e) {
-
-            // Optional: Show an error message to the user in the UI
+            // Hiển thị thông báo lỗi cho người dùng
             JOptionPane.showMessageDialog(null, "Error retrieving data from database. Please check the logs for details.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -150,7 +153,7 @@ public class ThongKe extends javax.swing.JInternalFrame {
         DefaultTableModel model = (DefaultTableModel) tblDT.getModel();
         model.setRowCount(0); // Xóa các dòng cũ
         for (main.entity.ThongKe tk : list) {
-            model.addRow(new Object[]{tk.getMaHD(), tk.getMaNV(), tk.getTenNV(), tk.getNgayTT(), tk.getTongTien()});
+            model.addRow(new Object[]{tk.getMaHD(), tk.getMaNV(), tk.getTenNV(), tk.getNgayTT(), decimalFormat.format(tk.getTongTien())});
         }
     }
 
@@ -161,10 +164,10 @@ public class ThongKe extends javax.swing.JInternalFrame {
             dtmsp.addRow(new Object[]{
                 tksp.getMaSP(),
                 tksp.getTenSP(),
-                tksp.getGiaSP(),
+                decimalFormat.format(tksp.getGiaSP()),
                 tksp.getTongSP(),
                 tksp.getDaBan(),
-                tksp.getDoanhThu()
+                decimalFormat.format(tksp.getDoanhThu())
 
             });
         }
@@ -442,12 +445,10 @@ public class ThongKe extends javax.swing.JInternalFrame {
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel16Layout.createSequentialGroup()
                 .addGap(36, 36, 36)
-                .addComponent(jLabel13)
-                .addContainerGap(68, Short.MAX_VALUE))
-            .addGroup(jPanel16Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(totalProductsLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(totalProductsLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel13))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
         jPanel16Layout.setVerticalGroup(
             jPanel16Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
