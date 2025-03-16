@@ -217,8 +217,9 @@ public class DangNhap extends javax.swing.JFrame {
                 return;
             }
         }
+        // Nếu không tìm thấy tài khoản khớp
+        JOptionPane.showMessageDialog(this, "Sai Tài Khoản Hoặc Mật Khẩu");
     }
-
     private void btnLamMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLamMoiActionPerformed
         txtMatKhau.setText("");
         txtTaiKhoan.setText("");

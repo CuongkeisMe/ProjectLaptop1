@@ -39,6 +39,7 @@ public class BanHang extends javax.swing.JInternalFrame {
     private String currentInvoiceId;
     private List<Vouchers> vouchers;
     int index = -1;
+    public int indexHoaDonSelected = -1;
     public boolean productExists;
     DecimalFormat decimalFormat = new DecimalFormat("#,##0");
     private ArrayList<String> listMaSPHuyHD = new ArrayList<>();
@@ -1090,11 +1091,9 @@ public class BanHang extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tblGioHangMousePressed
 
     private void txtGGKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtGGKeyReleased
-
         // Nếu radio button tiền mặt được chọn
         applyVoucher();
         updateTotal();
-
     }//GEN-LAST:event_txtGGKeyReleased
 
     private void txtTongTienKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtTongTienKeyReleased
@@ -1407,6 +1406,10 @@ public class BanHang extends javax.swing.JInternalFrame {
 
     private void btnClearGHActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearGHActionPerformed
         addMaSPHuy_List();
+        if(listMaSPHuyHD.size() <= 0){
+            JOptionPane.showMessageDialog(this, "Giỏ hàng hiện tại đang trống");
+            return;
+        }
         xoaAllSpBanHang();
         JOptionPane.showMessageDialog(this, "Xóa Thành Công");
         dtmGioHang.setRowCount(0);

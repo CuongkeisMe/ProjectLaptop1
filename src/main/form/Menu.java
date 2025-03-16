@@ -585,16 +585,19 @@ public class Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_trangchuPanelMouseClicked
 
     private void khachhangPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_khachhangPanelMouseClicked
+        khachhangForm = new KhachHangView();
         mainPanel.removeAll();
         mainPanel.add(khachhangForm).setVisible(true);
     }//GEN-LAST:event_khachhangPanelMouseClicked
 
     private void thongkePanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_thongkePanelMouseClicked
+        thongkeForm = new ThongKe();
         mainPanel.removeAll();
         mainPanel.add(thongkeForm).setVisible(true);
     }//GEN-LAST:event_thongkePanelMouseClicked
 
     private void khuyenmaiPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_khuyenmaiPanelMouseClicked
+        khuyenmaiForm = new KhuyenMai();
         mainPanel.removeAll();
         mainPanel.add(khuyenmaiForm).setVisible(true);
     }//GEN-LAST:event_khuyenmaiPanelMouseClicked
@@ -606,6 +609,7 @@ public class Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_hoadonPanel1MouseClicked
 
     private void taikhoanPanelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_taikhoanPanelMouseClicked
+        taikhoanForm = new TaiKhoan();
         int vaiTro = ToanCuc.getVaiTro();
         if (vaiTro == 1) {
             mainPanel.removeAll();

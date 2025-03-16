@@ -443,17 +443,12 @@ public class TaiKhoan extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnLamMoiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLamMoiActionPerformed
-
-        int chon = JOptionPane.showConfirmDialog(null, "Bạn Có Muốn Làm Mới Không");
-        if (chon == 0) {
-
             txtMaKhau.setText("");
             txtTenTaiKhoan.setText("");
             txtTimkiem.setText("");
             buttonGroup1.clearSelection();
             buttonGroup2.clearSelection();
             cbomanv.setSelectedIndex(-1);
-        }
     }//GEN-LAST:event_btnLamMoiActionPerformed
 
     private void tblViewTaiKhoanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblViewTaiKhoanMouseClicked
@@ -504,9 +499,9 @@ public class TaiKhoan extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tblTaiKoanKHDMouseClicked
 
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
-        int chon = JOptionPane.showConfirmDialog(this, "Bạn Có Muốn Thêm Hay Không ?");
-        if (chon == 0) {
-            if (!checktrong()) {
+        if (!checktrong()) {
+            int chon = JOptionPane.showConfirmDialog(this, "Bạn Có Muốn Thêm Hay Không ?");
+            if (chon == 0) {
                 TaiKhoanRequest tk = getformdata();
                 boolean success = tkrp.addtk(tk);
                 if (success) {
